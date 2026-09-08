@@ -8,11 +8,12 @@ router.get('/', (req, res) => {
     });
 });
 
-router.post('/', (req, res) => {
+router.post('/notes', (req, res) => {
+    const { title, content } = req.body;
     res.json({
         success: true,
         message: 'Create note',
-        data: req.body,
+        data: { title, content },
     });
 });
 
