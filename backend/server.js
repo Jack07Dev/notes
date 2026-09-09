@@ -4,7 +4,7 @@ const app = require('./src/app');
 
 dotenv.config();
 
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
     try {
@@ -12,6 +12,8 @@ const startServer = async () => {
 
         app.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
+            // You can also log the API URL for easier access
+            console.log(`API URL: http://localhost:${PORT}/api/notes`);
         });
     } catch (error) {
         console.error('Failed to start server:', error.message);

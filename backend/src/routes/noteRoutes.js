@@ -1,30 +1,24 @@
 const express = require('express');
+
+const {
+    getNotes,
+    getNote,
+    createNote,
+    updateNote,
+    deleteNote,
+} = require('../controllers/noteController');
+
 const router = express.Router();
 
-router.post('/notes', (req, res) => {
-    const { title, content } = req.body;
-    res.status(201).json({
-        success: true,
-        message: 'Create note',
-        data: { title, content },
-    });
-});
+router.get('/', getNotes);
 
-router.get('/notes', async (req, res) => {
-    try {
-        const notes = await noteModel.find();
-        res.status(200).json({
-            success: true,
-            message: 'Notes fetched successfully',
-            notes: notes,
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error fetching notes',
-            error: error.message,
-        });
-    }
-});
+router.get('/:id', getNote);
+
+router.post('/', createNote);
+
+router.put('/:id', updateNote);
+
+router.delete('/:id', deleteNote);
+
 
 module.exports = router;
