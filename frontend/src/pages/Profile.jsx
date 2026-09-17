@@ -1,6 +1,25 @@
 import { User, Mail, Shield } from "lucide-react";
+import { useState } from "react";
 
 function Profile() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+  const loadUser = async () => {
+    try {
+      const response = await getCurrentUser();
+      setUser(response.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  loadUser();
+}, []);
+
   return (
     <div className="mx-auto max-w-3xl">
       <div className="mb-8">

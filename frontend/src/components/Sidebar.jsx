@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 
 import { NavLink, useNavigate } from "react-router-dom";
+import { logoutUser } from "../api/authApi";
 
 const navigation = [
   {
@@ -36,9 +37,15 @@ const navigation = [
 function Sidebar() {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("isAuthenticated");
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+    } catch (error) {
+      console.error("Logout API error:", error);
+    } finally {
+      localStorage.removeItem("isAuthenticated");
+      navigate("/login", { replace: true });
+    }
   };
 
   return (

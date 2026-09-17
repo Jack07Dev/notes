@@ -2,7 +2,6 @@ const noteService = require("../services/noteService");
 
 const getNotes = async (req, res, next) => {
   try {
-    console.log("🔥 GET /api/notes reached");
     const notes = await noteService.getAllNotes();
 
     res.status(200).json({

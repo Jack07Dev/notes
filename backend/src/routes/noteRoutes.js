@@ -7,18 +7,16 @@ const {
     updateNote,
     deleteNote,
 } = require('../controllers/noteController');
+const { authUser } = require("../middlewares/auth.middleware");
 
+// Create a router
 const router = express.Router();
 
-router.get('/', getNotes);
-
-router.get('/:id', getNote);
-
-router.post('/', createNote);
-
-router.put('/:id', updateNote);
-
-router.delete('/:id', deleteNote);
-
+// Define routes for notes
+router.get('/', authUser, getNotes);
+router.get('/:id', authUser, getNote);
+router.post('/', authUser, createNote);
+router.put('/:id', authUser, updateNote);
+router.delete('/:id', authUser, deleteNote);
 
 module.exports = router;

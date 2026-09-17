@@ -3,7 +3,7 @@ import { ArrowLeft, Save } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-import { fetchNoteById, updateNote } from "../api/apiConfig";
+import { fetchNoteById, updateNote } from "../api/api";
 
 function EditNote() {
   const { id } = useParams();

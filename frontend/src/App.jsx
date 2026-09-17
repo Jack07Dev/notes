@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -9,23 +9,31 @@ import CreateNote from "./pages/CreateNote";
 import EditNote from "./pages/EditNote";
 import History from "./pages/History";
 import Profile from "./pages/Profile";
-import Login from "./pages/Login";
+import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import CreateNotePage from "./pages/CreateNotePage";
+import Login from "./pages/Login";
 
 function App() {
   return (
     <Routes>
+      {/* Authentication */}
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
 
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
+
+          {/* Notes */}
           <Route path="/notes" element={<Notes />} />
-          <Route path="/notes/create" element={<CreateNotePage /> } />
+          <Route path="/notes/create" element={<CreateNotePage />} />
           <Route path="/notes/:id/edit" element={<EditNote />} />
           <Route path="/history" element={<History />} />
           <Route path="/profile" element={<Profile />} />
+
+          {/* Default */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Route>
       </Route>
 

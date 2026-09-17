@@ -1,84 +1,155 @@
-import { BookOpen, Mail, Lock } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+
+import AuthLayout from "../components/AuthLayout";
+import { loginUser } from "../api/authApi";
 
 function Login() {
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
-    localStorage.setItem("isAuthenticated", "true");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-    navigate("/");
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!formData.email || !formData.password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const data = await loginUser(formData);
+
+      // Mark user as authenticated for ProtectedRoute
+      localStorage.setItem("isAuthenticated", "true");
+
+      toast.success(data.message || "Login successful!");
+
+      navigate("/", { replace: true });
+    } catch (error) {
+      toast.error(error.message || "Unable to login");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-md">
-        <div className="mb-8 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-white">
-            <BookOpen size={27} />
+    <AuthLayout
+      title="Welcome back"
+      subtitle="Sign in to continue to your notes."
+    >
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Email */}
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            Email address
+          </label>
+
+          <div className="relative">
+            <Mail
+              size={19}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+            />
+
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="you@example.com"
+              className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 bg-white text-slate-900 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+            />
           </div>
-
-          <h1 className="mt-5 text-3xl font-bold text-slate-900">
-            Welcome back
-          </h1>
-
-          <p className="mt-2 text-slate-500">
-            Sign in to your Jenny Notes account.
-          </p>
         </div>
 
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Email
-              </label>
+        {/* Password */}
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            Password
+          </label>
 
-              <div className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 focus-within:border-indigo-500">
-                <Mail size={18} className="text-slate-400" />
+          <div className="relative">
+            <Lock
+              size={19}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+            />
 
-                <input
-                  required
-                  type="email"
-                  placeholder="you@example.com"
-                  className="flex-1 outline-none"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Password
-              </label>
-
-              <div className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 focus-within:border-indigo-500">
-                <Lock size={18} className="text-slate-400" />
-
-                <input
-                  required
-                  type="password"
-                  placeholder="••••••••"
-                  className="flex-1 outline-none"
-                />
-              </div>
-            </div>
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter your password"
+              className="w-full h-12 pl-11 pr-12 rounded-xl border border-slate-200 bg-white text-slate-900 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+            />
 
             <button
-              type="submit"
-              className="w-full rounded-xl bg-indigo-600 py-3 font-semibold text-white transition hover:bg-indigo-700"
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
             >
-              Sign in
+              {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
             </button>
-          </form>
+          </div>
         </div>
 
-        <p className="mt-6 text-center text-xs text-slate-400">
-          Jenny Notes · Your personal workspace
+        {/* Forgot password */}
+        <div className="flex justify-end">
+          <button
+            type="button"
+            className="text-sm font-medium text-indigo-600 hover:text-indigo-700"
+          >
+            Forgot password?
+          </button>
+        </div>
+
+        {/* Submit */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full h-12 rounded-xl bg-indigo-600 text-white font-semibold flex items-center justify-center gap-2 hover:bg-indigo-700 transition disabled:opacity-60 disabled:cursor-not-allowed shadow-lg shadow-indigo-600/20"
+        >
+          {loading ? (
+            <>
+              <Loader2 size={19} className="animate-spin" />
+              Signing in...
+            </>
+          ) : (
+            "Sign in"
+          )}
+        </button>
+
+        {/* Register */}
+        <p className="text-center text-sm text-slate-500 pt-3">
+          Don't have an account?{" "}
+          <Link
+            to="/register"
+            className="font-semibold text-indigo-600 hover:text-indigo-700"
+          >
+            Create account
+          </Link>
         </p>
-      </div>
-    </div>
+      </form>
+    </AuthLayout>
   );
 }
 

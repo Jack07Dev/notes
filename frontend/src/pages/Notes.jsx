@@ -1,7 +1,7 @@
 import { Search, Plus, MoreVertical } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { deleteNote, fetchNotes } from "../api/apiConfig";
+import { deleteNote, fetchNotes } from "../api/api";
 
 function Notes() {
   const [notes, setNotes] = useState([]);

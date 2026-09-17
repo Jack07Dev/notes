@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CreateNote from "./CreateNote";
-import { createNote } from "../api/apiConfig";
+import { createNote } from "../api/api";
 
 function CreateNotePage() {
   const navigate = useNavigate();
