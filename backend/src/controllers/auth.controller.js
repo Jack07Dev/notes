@@ -116,25 +116,58 @@ const userLogout = async (req, res, next) => {
   }
 };
 
-// const getCurrentUser = async (req, res, next) => {
-//     try{
-//         const user = await userModel.findById(req.user.id).select("-password -resetPasswordToken -resetPasswordExpires");
+const getCurrentUser = async (req, res, next) => {
+    try{
+        const user = await userModel.findById(req.user.id).select("-password -resetPasswordToken -resetPasswordExpires");
     
-//         if(!user){
-//             return res.status(400).json({
-//                 success: false,
-//                 message: "User not found",
-//             });
-//         }
+        if(!user){
+            return res.status(400).json({
+                success: false,
+                message: "User not found",
+            });
+        }
 
-//         return res.status(200).json({
-//             success: true,
-//             message: "User fetched successfully",
-//             data: user
-//         });
-//     }catch(error){
-//         next(error);
-//     }
-// };
+        return res.status(200).json({
+            success: true,
+            message: "User fetched successfully",
+            data: user
+        });
+    }catch(error){
+        next(error);
+    }
+};
 
-module.exports = { userRegisteration, userLogin, userLogout };
+const updateProfile = async (req, res, next) => {
+  try {
+    const { username, bio, profileImage } = req.body;
+
+    const user = await userModel.findByIdAndUpdate(
+      req.user.id,
+      {
+        username,
+        bio,
+        profileImage,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).select("-password -resetPasswordToken -resetPasswordExpires");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+module.exports = { userRegisteration, userLogin, userLogout, getCurrentUser, updateProfile };

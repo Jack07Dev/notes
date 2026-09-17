@@ -13,6 +13,7 @@ import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import CreateNotePage from "./pages/CreateNotePage";
 import Login from "./pages/Login";
+import EditProfile from "./pages/EditProfile";
 
 function App() {
   return (
@@ -31,7 +32,7 @@ function App() {
           <Route path="/notes/:id/edit" element={<EditNote />} />
           <Route path="/history" element={<History />} />
           <Route path="/profile" element={<Profile />} />
-
+          <Route path="/profile/edit" element={<EditProfile />} />
           {/* Default */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Route>

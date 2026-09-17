@@ -1,7 +1,22 @@
 import { Search, Bell, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { getCurrentUser } from "../api/authApi";
 
 function Header() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const response = await getCurrentUser();
+        setUser(response.data);
+      } catch (error) {
+        console.error("Failed to load user:", error);
+      }
+    };
+    loadUser();
+  }, []);
   return (
     <header className="sticky top-0 z-20 flex h-20 items-center justify-between border-b border-slate-200 bg-white/90 px-4 backdrop-blur sm:px-6 lg:px-8">
       <div>
@@ -36,9 +51,17 @@ function Header() {
 
         <Link
           to="/profile"
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 font-semibold text-indigo-600"
+          className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-indigo-100 font-semibold text-indigo-600"
         >
-          J
+          {user?.profileImage ? (
+            <img
+              src={user.profileImage}
+              alt={user.username}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            user?.username?.charAt(0).toUpperCase() || "U"
+          )}
         </Link>
       </div>
     </header>
