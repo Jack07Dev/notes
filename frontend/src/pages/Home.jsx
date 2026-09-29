@@ -1,47 +1,76 @@
-import { FileText, Clock3, Trash2, ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  FileText,
+  Clock3,
+  Trash2,
+  Loader2,
+  ArrowRight,
+  Users,
+} from "lucide-react";
+import toast from "react-hot-toast";
+import { fetchAdminDashboard } from "../api/adminApi";
 
 import { Link } from "react-router-dom";
-
-const stats = [
-  {
-    title: "Total Notes",
-    value: "24",
-    icon: FileText,
-  },
-  {
-    title: "Recent Notes",
-    value: "8",
-    icon: Clock3,
-  },
-  {
-    title: "Deleted Notes",
-    value: "3",
-    icon: Trash2,
-  },
-];
-
-const recentNotes = [
-  {
-    id: 1,
-    title: "Project Ideas",
-    description: "Ideas for my next full-stack application...",
-    date: "Sep 09, 2026",
-  },
-  {
-    id: 2,
-    title: "Learning React",
-    description: "React hooks, optimization and advanced patterns.",
-    date: "Sep 08, 2026",
-  },
-  {
-    id: 3,
-    title: "Backend Architecture",
-    description: "Express, MongoDB, controllers and services.",
-    date: "Sep 07, 2026",
-  },
-];
+import { fetchNotes } from "../api/api";
 
 function Home() {
+  const [dashboard, setDashboard] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [recentNotes, setRecentNotes] = useState([]);
+
+  const loadDashboard = async () => {
+    try {
+      setLoading(true);
+      const response = await fetchAdminDashboard();
+      setDashboard(response.data);
+    } catch (error) {
+      toast.error(error.message || "Failed to load dashboard");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadRecentNotes = async () => {
+    try {
+      const response = await fetchNotes();
+      const notes = response.data || [];
+      const latestNotes = [...notes]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 3);
+      setRecentNotes(latestNotes);
+    } catch (error) {
+      toast.error(error.message || "Failed to load recent notes");
+    }
+  };
+
+  useEffect(() => {
+    loadDashboard();
+    loadRecentNotes();
+  }, []);
+
+  const stats = [
+    {
+      title: "Total Users",
+      value: dashboard?.totalUsers ?? 0,
+      icon: Users,
+    },
+    {
+      title: "Total Notes",
+      value: dashboard?.totalNotes ?? 0,
+      icon: FileText,
+    },
+    {
+      title: "Recent Notes",
+      value: dashboard?.recentNotes ?? 0,
+      icon: Clock3,
+    },
+    {
+      title: "Deleted Notes",
+      value: dashboard?.deletedNotes ?? 0,
+      icon: Trash2,
+    },
+  ];
+
   return (
     <div className="mx-auto max-w-7xl space-y-8">
       {/* Hero */}
@@ -75,7 +104,11 @@ function Home() {
 
       {/* Stats */}
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <p className="mt-2 text-3xl font-bold text-slate-900">
+        {loading ? <Loader2 /> : stats.value}
+      </p>
+
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => {
           const Icon = stat.icon;
 
@@ -112,35 +145,57 @@ function Home() {
             <p className="text-sm text-slate-500">Your latest notes</p>
           </div>
 
-          <Link to="/notes" className="text-sm font-semibold text-indigo-600">
+          <Link
+            to="/notes"
+            className="text-sm font-semibold text-indigo-600 hover:text-indigo-700"
+          >
             View all
           </Link>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {recentNotes.map((note) => (
-            <div
-              key={note.id}
-              className="group rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-1 hover:shadow-lg"
+        {recentNotes.length === 0 ? (
+          <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
+            <p className="text-sm text-slate-500">No notes found.</p>
+
+            <Link
+              to="/notes/create"
+              className="mt-3 inline-block text-sm font-semibold text-indigo-600"
             >
-              <div className="mb-5 flex items-center justify-between">
-                <span className="rounded-lg bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
-                  Note
-                </span>
+              Create your first note
+            </Link>
+          </div>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {recentNotes.map((note) => (
+              <div
+                key={note._id}
+                className="group rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-1 hover:shadow-lg"
+              >
+                <div className="mb-5 flex items-center justify-between">
+                  <span className="rounded-lg bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
+                    Note
+                  </span>
 
-                <span className="text-xs text-slate-400">{note.date}</span>
+                  <span className="text-xs text-slate-400">
+                    {new Date(note.createdAt).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "2-digit",
+                      year: "numeric",
+                    })}
+                  </span>
+                </div>
+
+                <h3 className="text-lg font-semibold text-slate-900">
+                  {note.title}
+                </h3>
+
+                <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">
+                  {note.content}
+                </p>
               </div>
-
-              <h3 className="text-lg font-semibold text-slate-900">
-                {note.title}
-              </h3>
-
-              <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">
-                {note.description}
-              </p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );

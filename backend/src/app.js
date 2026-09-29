@@ -2,9 +2,10 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
-const noteRoutes = require("./routes/noteRoutes");
-const authRouter = require('./routes/auth.route');
-
+const noteRoutes = require("./routes/note.route");
+const authRoutes = require('./routes/auth.route');
+const historyRoutes = require("./routes/history.route");
+const adminRoutes = require("./routes/admin.route");
 // Initialize Express app
 const app = express();
 
@@ -27,7 +28,9 @@ app.get("/", (req, res) => {
 });
 
 // Use note routes
-app.use("/api/auth", authRouter);
+app.use("/api/auth", authRoutes);
 app.use("/api/notes", noteRoutes);
+app.use("/api/history", historyRoutes);
+app.use("/api/admin", adminRoutes);
 
 module.exports = app;

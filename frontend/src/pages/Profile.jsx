@@ -80,6 +80,12 @@ function Profile() {
             >
               Edit Profile
             </Link>
+            <Link
+              to="/profile/change-password"
+              className="rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              Change Password
+            </Link>
           </div>
         </div>
 
