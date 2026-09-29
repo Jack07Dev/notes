@@ -96,3 +96,104 @@ export const updateProfile = async (profileData) => {
     throw error;
   }
 };
+
+export const changePassword = async (passwordData) => {
+  try {
+    const response = await fetch(`${API_URL}/change-password`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(passwordData),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to change password");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Change password error:", error);
+    throw error;
+  }
+};
+
+export const forgotPassword = async (email) => {
+  try {
+    const response = await fetch(`${API_URL}/forgot-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to send OTP");
+    }
+    return data;
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    throw error;
+  }
+};
+
+export const verifyOtp = async (email, otp) => {
+  try {
+    const response = await fetch(`${API_URL}/verify-otp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        otp,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to verify OTP");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Verify OTP error:", error);
+    throw error;
+  }
+};
+
+export const resetPassword = async (email, resetToken, newPassword) => {
+  try {
+    const response = await fetch(`${API_URL}/reset-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        resetToken,
+        newPassword,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to reset password");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Reset password error:", error);
+    throw error;
+  }
+};

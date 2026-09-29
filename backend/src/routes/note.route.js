@@ -6,7 +6,7 @@ const {
     createNote,
     updateNote,
     deleteNote,
-} = require('../controllers/noteController');
+} = require('../controllers/note.controller');
 const { authUser } = require("../middlewares/auth.middleware");
 
 // Create a router
